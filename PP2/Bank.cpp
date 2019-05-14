@@ -12,6 +12,7 @@ CBankClient* CBank::CreateClient()
 	unsigned clientId = unsigned(m_clients.size());
 	CBankClient* client = new CBankClient(this, clientId);
 	m_clients.push_back(*client);
+	m_balance[(*client).GetId()] = 0;
 	return client;
 }
 
@@ -23,6 +24,7 @@ void CBank::UpdateClientBalance(CBankClient &client, int value)
 	
 	SomeLongOperations();
 	totalBalance += value;
+	m_balance[(&client)->GetId()] += value;
 
 	std::cout
 		<< "Client " << client.GetId() << " updates his balance with " << value
@@ -37,10 +39,20 @@ void CBank::UpdateClientBalance(CBankClient &client, int value)
 	SetTotalBalance(totalBalance);
 }
 
+std::vector<CBankClient> CBank::GetClients()
+{
+	return m_clients;
+}
 
-int CBank::GetTotalBalance()
+
+long CBank::GetTotalBalance()
 {
 	return m_totalBalance;
+}
+
+long CBank::GetBalance(long id)
+{
+	return m_balance[id];
 }
 
 
