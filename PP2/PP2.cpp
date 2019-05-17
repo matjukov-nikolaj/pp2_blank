@@ -7,10 +7,20 @@
 int main(int argc, char *argv[])
 {
 	int clientNumbers = 2;
+	std::string primitive = "";
+	if (std::string(argv[1]) == "/?") {
+		std::cout << "Usage: PP2.exe <number of clients> <primitive>" << std::endl;
+		std::cout << "Primitive: cs - criticalsection, mutex- mutex" << std::endl;
+		return 0;
+	}
 	if (argc == 2) {
 		clientNumbers = atoi(argv[1]);
 	}
-	CBank* bank = new CBank();
+	if (argc = 3) {
+		clientNumbers = atoi(argv[1]);
+		primitive = argv[2];
+	}
+	CBank* bank = new CBank(primitive);
 	for (int i = 0; i < clientNumbers; ++i) {
 		CBankClient* client = bank->CreateClient();
 	}

@@ -1,11 +1,42 @@
 #include "Bank.h"
 
-CBank::CBank()
+CBank::CBank(std::string primitive)
 {
 	m_clients = std::vector<CBankClient>();
 	m_totalBalance = 0;
+	m_primitive = primitive;
+
+	InitializeCriticalSection(&m_criticalSection);
 }
 
+CBank::~CBank()
+{
+	DeleteCriticalSection(&m_criticalSection);
+}
+
+std::string CBank::GetPrimitive() {
+	return m_primitive;
+}
+
+void CBank::Enter()
+{
+	if (CBank::GetPrimitive() == "cs") {
+		EnterCriticalSection(&m_criticalSection);
+	}
+	else if (CBank::GetPrimitive() == "mutex") {
+		m_mutex.lock();
+	}
+}
+
+void CBank::Leave()
+{
+	if (CBank::GetPrimitive() == "cs") {
+		LeaveCriticalSection(&m_criticalSection);
+	}
+	else if (CBank::GetPrimitive() == "mutex") {
+		m_mutex.unlock();
+	}
+}
 
 CBankClient* CBank::CreateClient()
 {
@@ -19,6 +50,7 @@ CBankClient* CBank::CreateClient()
 
 void CBank::UpdateClientBalance(CBankClient &client, int value)
 {
+	Enter();
 	int totalBalance = GetTotalBalance();
 	std::cout << "Client " << client.GetId() << " initiates reading total balance. Total = " << totalBalance << "." << std::endl;
 	
@@ -37,6 +69,7 @@ void CBank::UpdateClientBalance(CBankClient &client, int value)
 	}
 
 	SetTotalBalance(totalBalance);
+	Leave();
 }
 
 std::vector<CBankClient> CBank::GetClients()
